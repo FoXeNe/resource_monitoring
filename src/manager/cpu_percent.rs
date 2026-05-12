@@ -1,13 +1,12 @@
-use crate::reader::cpu_reader::read;
-use crate::traits::metrics_provider::MetricsProvider;
+use crate::manager::reader::cpu_reader::read;
+use crate::traits::MetricsProvider;
 
 pub struct CpuMetrics;
 
 impl MetricsProvider for CpuMetrics {
     fn get(&self) -> f64 {
         let (delta_total, delta_idle) = find_delta(); 
-        let cpu_percent = (1.0 - (delta_idle / delta_total)) * 100.0;
-        cpu_percent
+        (1.0 - (delta_idle / delta_total)) * 100.0
     }
 }
 

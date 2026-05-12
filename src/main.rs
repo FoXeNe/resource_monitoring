@@ -1,5 +1,4 @@
 mod manager;
-mod reader;
 mod traits;
 use crate::traits::MetricsProvider;
 use crate::manager::cpu_percent::CpuMetrics;
