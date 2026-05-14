@@ -1,25 +1,22 @@
 use teloxide::prelude::*;
-use dotenvy::dotenv;
-use tokio::runtime::Runtime;
-use crate::manager::cpu_percent;
+use std::sync::Arc;
+use crate::traits::MetricsProvider;
 
-pub fn start() {
-    dotenv().ok();
+pub async fn start(metrics: impl MetricsProvider + Send + Sync + 'static) {
+    let bot = Bot::from_env();
+    let metrics = Arc::new(metrics);
 
-    let rt = Runtime::new().expect("не удалось создать рантайм");
-
-    rt.block_on(async {
-        let bot = Bot::from_env();
-
-        teloxide::repl(bot, |bot: Bot, msg: Message| async move {
-            if let Some(text) = msg.text() {
-                let usage = cpu_percent::get();
+    teloxide::repl(bot, move |bot: Bot, msg: Message| {
+        let metrics = Arc::clone(&metrics);
+        async move {
+            if let Some(_) = msg.text() {
+                let usage = metrics.get();
                 bot.send_message(msg.chat.id, format!("{:.1}%", usage))
                     .send()
                     .await?;
             }
             Ok::<(), teloxide::RequestError>(())
-        })
-        .await;
-    });
+        }
+    })
+    .await;
 }

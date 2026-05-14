@@ -1,11 +1,10 @@
 mod manager;
-mod reader;
 mod bot;
 mod traits;
-use crate::traits::MetricsProvider;
 use crate::manager::cpu_percent::CpuMetrics;
 
-fn main() {
-    let metrics = CpuMetrics;
-    println!("{:.1}%", metrics.get());
+#[tokio::main]
+async fn main() {
+    dotenvy::dotenv().ok();
+    bot::bot::start(CpuMetrics).await;
 }
