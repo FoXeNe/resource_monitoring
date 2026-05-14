@@ -1,9 +1,11 @@
 mod manager;
 mod reader;
 mod bot;
+mod traits;
+use crate::traits::MetricsProvider;
+use crate::manager::cpu_percent::CpuMetrics;
 
 fn main() {
-    let res = manager::cpu_percent::get();
-    println!("{}", res);
-    bot::bot::start();
+    let metrics = CpuMetrics;
+    println!("{:.1}%", metrics.get());
 }
